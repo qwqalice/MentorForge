@@ -296,7 +296,7 @@ python -m pip install pdfplumber pypdf certifi
 基础版已经完成并通过验证：
 
 - ✅ Skill 校验：`quick_validate.py` 通过
-- ✅ 主页采集测试：谢伟迪老师主页采集到 160 条 publication
+- ✅ 主页采集测试：XX老师主页采集到 160 条 publication
 - ✅ PDF 下载测试：arXiv 开放 PDF 下载成功
 - ✅ 全文抽取测试：成功生成 signal card 和 distillation workbench
 - ✅ 失败补源机制：生成 `agent-fallback-queue.md`
