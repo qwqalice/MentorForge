@@ -103,7 +103,7 @@ research-mentor-distiller/
 你可以把这个目录放入 Codex 的 skills 目录，或在当前工作区中显式要求 Agent 使用它：
 
 ```text
-使用 MentorForge.skill，帮我蒸馏上海交通大学谢伟迪老师的研究品味和方法论。
+使用 MentorForge.skill，帮我蒸馏XX大学XX老师的研究品味和方法论。
 ```
 
 ### 2. 采集论文列表
@@ -112,9 +112,9 @@ research-mentor-distiller/
 
 ```bash
 python research-mentor-distiller/scripts/collect_publications.py \
-  --scholar-name "Weidi Xie" \
-  --homepage "https://weidixie.github.io/" \
-  --output-dir source_materials/weidi-xie/publications \
+  --scholar-name "Example" \
+  --homepage "https://example.github.io/" \
+  --output-dir source_materials/example/publications \
   --download-pdfs \
   --max-pdfs 30
 ```
@@ -145,7 +145,7 @@ papers/
 ```bash
 python research-mentor-distiller/scripts/extract_fulltext.py \
   --publication-index source_materials/weidi-xie/publications/publication-index.json \
-  --output-dir source_materials/weidi-xie/fulltext \
+  --output-dir source_materials/example/fulltext \
   --max-papers 40 \
   --overwrite
 ```
