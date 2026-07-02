@@ -23,6 +23,32 @@ Every generated mentor skill must distinguish:
 
 Never claim the generated skill represents the real person's private views, lab admissions decisions, review judgments, or current unpublished opinions.
 
+## Compliance Contract
+
+Generated mentor skills must pass a package compliance check before being called complete. Do not automatically install generated mentor skills into a runtime skill directory unless the user explicitly asks for installation. By default, write the generated package to the requested output folder, validate it, and report the path plus validation status.
+
+Version claims are hard gates:
+
+- **v0 homepage/profile distillation**: public profile/homepage/CV evidence only.
+- **v1 metadata/abstract distillation**: at least 20 publication records or the best available complete small-field corpus; abstracts or reliable official metadata for representative papers.
+- **v2 full-paper distillation**: open/public full text extracted for representative papers, with at least 10 successful full-text papers by default and enough direction coverage for the user's requested scope. If this fails, do not call the output v2.
+- **v3 validated cyber mentor**: v2 plus independent forward tests on at least three realistic research tasks.
+
+Every generated mentor skill package must include:
+
+- `SKILL.md`
+- `agents/openai.yaml`
+- `distillation-manifest.json`
+- `references/evidence-snapshot.md`
+- `references/publication-index.md`
+- `references/research-taste-profile.md`
+- `references/fulltext-distillation.md`
+- `references/validation.md`
+
+Use ASCII-only YAML frontmatter in `SKILL.md` for cross-platform portability. Put Chinese names, emoji, arrows, and other non-ASCII text in the Markdown body, not in frontmatter.
+
+Read `references/compliance-and-packaging.md` before generating or auditing a mentor skill package. Run `scripts/validate_mentor_skill.py` before reporting completion.
+
 ## Workflow
 
 ### 1. Define The Distillation Target
@@ -54,6 +80,7 @@ source_materials/<scholar-slug>/
 mentor-skills/<scholar-slug>/
   SKILL.md
   agents/openai.yaml
+  distillation-manifest.json
   references/evidence-snapshot.md
   references/publication-index.md
   references/research-taste-profile.md
@@ -88,6 +115,14 @@ Useful flags:
 The collector writes `publication-index.md`, `publication-index.json`, `crawl-report.md`, and `agent-fallback-queue.md`. Always inspect `crawl-report.md` for author ambiguity and collection warnings before using the metadata as evidence.
 
 If script coverage is weak, use the agent's own browsing/search ability on the items in `agent-fallback-queue.md`. Prefer official paper pages, arXiv, project pages, repositories, institutional pages, and lawful open PDFs. Record every manual fallback source and confidence level before using it as evidence.
+
+If PDF download or API enrichment fails, do not stop at the first failure. Try at least three recovery routes before downgrading the version claim:
+
+- fix local download conditions such as certificates, user-agent, timeouts, or retry limits;
+- search alternate lawful sources such as arXiv, project pages, institutional pages, repositories, publisher open PDFs, OpenAlex, Semantic Scholar, or DOI landing pages;
+- manually recover representative PDFs or abstracts from `agent-fallback-queue.md` using the agent's own browsing/search ability.
+
+If recovery still fails, record it in the manifest and `references/validation.md`, then lower the version claim.
 
 ### 3. Triage Representative Papers
 
@@ -174,9 +209,19 @@ Create a concise `SKILL.md` that another agent can actually use. It should inclu
 
 Move bulky evidence into `references/`. Do not stuff long publication lists into `SKILL.md`.
 
+Also create `agents/openai.yaml` and `distillation-manifest.json`. The manifest is the machine-readable audit trail for evidence counts, version claim, fallback attempts, and validation status. Use `references/mentor-skill-template.md` for the required package shape.
+
+Do not install the generated mentor skill automatically. Leave it in the output folder and tell the user how to install or export it if they want.
+
 ### 8. Validate
 
-Run five checks before calling the mentor skill usable:
+Run the compliance validator before calling the mentor skill usable:
+
+```bash
+python scripts/validate_mentor_skill.py mentor-skills/<scholar-slug> --target-version v2 --strict
+```
+
+Then run five qualitative checks:
 
 - **Evidence check**: important claims cite or point to evidence.
 - **Recurrence check**: core mental models appear across more than one paper, year, or domain.
@@ -185,6 +230,8 @@ Run five checks before calling the mentor skill usable:
 - **Boundary check**: the skill refuses to impersonate the scholar or fabricate private beliefs.
 
 Record validation notes in `references/validation.md`.
+
+If validation fails, fix the package or explicitly report the lower valid version. Do not silently pass a partial v1.5 package as v2.
 
 ## Output Style
 
@@ -202,9 +249,12 @@ For Chinese users, write the user-facing report in Chinese unless they ask other
 - Read `references/profile-schema.md` when extracting evidence.
 - Read `references/mentor-skill-template.md` when writing the generated mentor skill.
 - Read `references/fulltext-distillation-protocol.md` when doing full-paper precision distillation or script/manual fallback.
+- Read `references/compliance-and-packaging.md` before packaging, validating, or exporting a mentor skill.
 - Use `scripts/init_distillation_workspace.py` to create a clean source/output folder skeleton.
 - Use `scripts/collect_publications.py` to collect public publication metadata and open PDFs from homepage, arXiv, OpenAlex, Semantic Scholar, and Crossref.
 - Use `scripts/extract_fulltext.py` to turn PDFs into full-text markdown, paper signal cards, and a methodology workbench.
+- Use `scripts/validate_mentor_skill.py` to enforce package completeness, version gates, manifest consistency, and portability checks.
+- Use `scripts/export_skill_package.py` only when the user asks for a platform-specific export. Exporting is separate from installation.
 
 ## Safety And Ethics
 

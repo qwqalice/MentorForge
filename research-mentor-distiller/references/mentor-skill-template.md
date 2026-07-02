@@ -2,6 +2,10 @@
 
 Use this structure when generating a scholar-specific mentor skill. Keep `SKILL.md` concise and move evidence details into `references/`.
 
+Every generated package must include `distillation-manifest.json` and
+`agents/openai.yaml`. Do not install the generated package automatically.
+Validate it in place and report the path.
+
 ```markdown
 ---
 name: <scholar-slug>-research-mentor
@@ -123,6 +127,52 @@ When adding evidence:
 - <Script failures, missing PDFs, or manual fallback sources.>
 ```
 
+Frontmatter portability rule: keep frontmatter ASCII-only. Put non-English names
+or stylized self-introductions in the Markdown body.
+
+## Required Manifest
+
+Create `distillation-manifest.json`:
+
+```json
+{
+  "schema_version": "1.0",
+  "target": {
+    "name": "<Scholar>",
+    "slug": "<scholar-slug>",
+    "homepage": "<homepage-or-null>"
+  },
+  "skill_name": "<scholar-slug>-research-mentor",
+  "version_claimed": "v2",
+  "created_at": "<ISO-8601 UTC timestamp>",
+  "source_materials": {
+    "root": "source_materials/<scholar-slug>",
+    "publication_index": "source_materials/<scholar-slug>/publications/publication-index.json",
+    "fulltext_dir": "source_materials/<scholar-slug>/fulltext"
+  },
+  "evidence": {
+    "publication_count": 0,
+    "records_with_pdf_url": 0,
+    "abstracts_count": 0,
+    "pdf_downloaded": 0,
+    "fulltext_extracted": 0,
+    "representative_papers": 0,
+    "directions_covered": []
+  },
+  "fallback": {
+    "used": false,
+    "attempts": [],
+    "unresolved": []
+  },
+  "validation": {
+    "status": "pending",
+    "target_version_checked": "v2",
+    "forward_tests": 0,
+    "notes": ""
+  }
+}
+```
+
 ## Required Reference Files
 
 - `references/evidence-snapshot.md`: short evidence-backed profile, not a huge dump.
@@ -130,3 +180,24 @@ When adding evidence:
 - `references/research-taste-profile.md`: detailed worldviews, heuristics, anti-patterns, and confidence tags.
 - `references/fulltext-distillation.md`: full-text paper signals, cross-direction methodology, and direction-specific methodology when available.
 - `references/validation.md`: tests run and known failure modes.
+
+## Required Agents Metadata
+
+Create `agents/openai.yaml`:
+
+```yaml
+interface:
+  display_name: "<Scholar> Research Mentor"
+  short_description: "Evidence-grounded research mentor for <fields>."
+  default_prompt: "Use $<scholar-slug>-research-mentor to critique my research idea and improve its data, method, and evaluation."
+policy:
+  allow_implicit_invocation: true
+```
+
+## Validation Command
+
+Run the validator from the MentorForge skill directory:
+
+```bash
+python scripts/validate_mentor_skill.py <path-to-generated-skill> --target-version v2 --strict
+```

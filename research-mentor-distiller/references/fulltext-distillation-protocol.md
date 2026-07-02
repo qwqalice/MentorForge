@@ -15,6 +15,21 @@ than a lightweight homepage or abstract distillation.
 4. Record every manual fallback source in the evidence snapshot with confidence.
 5. Do not use paywalled full text unless the user provides lawful access.
 
+Do not stop at the first script failure. Before downgrading a target v2
+distillation, attempt at least three recovery routes:
+
+- repair download conditions such as SSL certificates, `certifi`, user-agent,
+  timeout, retry count, or smaller parallel batches;
+- search alternate lawful sources such as arXiv, project pages, institutional
+  pages, repositories, DOI landing pages, publisher open PDFs, OpenAlex,
+  Semantic Scholar, or Crossref;
+- manually recover representative papers from `agent-fallback-queue.md` using
+  browser/search ability.
+
+If full-text coverage remains below the required threshold, explicitly lower the
+version claim to v1 or v1.5 and write the unresolved items into
+`references/validation.md` and `distillation-manifest.json`.
+
 ## Full-Text Extraction
 
 Run `scripts/extract_fulltext.py` after open PDFs are available:
@@ -122,3 +137,9 @@ Before generating or updating a mentor skill:
 - The final skill should tell the mentor how to use evidence in idea critique,
   experiment design, literature strategy, and paper feedback.
 - The final skill should refuse impersonation and private-belief claims.
+- A v2 claim requires representative full-text extraction, at least 10 extracted
+  papers by default, and enough direction coverage for the requested scope.
+- A v3 claim requires v2 plus independent forward tests on at least three
+  realistic research tasks.
+- Run `scripts/validate_mentor_skill.py <skill-dir> --target-version <vN>`
+  before reporting completion.
